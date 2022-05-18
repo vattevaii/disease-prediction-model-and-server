@@ -278,7 +278,7 @@
                //send request to server
                var xhr = new XMLHttpRequest();
                xhr.open('POST', 'https://dese-serve.herokuapp.com/api/predict2', true);
-               xhr.setRequestHeader('Content-Type', 'application/json');
+               xhr.setRequestHeader('Content-Type', 'text/plain');
                //xhr content as selectedItems
                xhr.send("{\"symptoms\":" + JSON.stringify(selected) + "}");
                xhr.onload = function () {
