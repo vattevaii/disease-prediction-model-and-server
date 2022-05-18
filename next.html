@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+   <head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Document</title>
+      <link rel="stylesheet" href="normform.css">
+      <style>
+         ul {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+         }
+
+         ul>li {
+            list-style: none;
+            margin-bottom: 10px;
+            padding: 1em;
+            margin: .2em .5em;
+            border-radius: 15px;
+            cursor: pointer;
+         }
+
+         #symps>li {
+            color: white;
+            background-color: #2ecc71;
+         }
+
+         #symps>li:hover {
+            background-color: #27ae60;
+         }
+
+         #selected>li {
+            color: white;
+            background-color: #3498db;
+         }
+
+         #selected>li:hover {
+            background-color: #2980b9;
+         }
+
+         #symps>.no-match {
+            cursor: initial;
+            background-color: tomato;
+         }
+
+         .no-match:hover {
+            background-color: #27ae60;
+         }
+      </style>
+   </head>
+
+   <body>
+      <form action="POST" class="normform" id="form">
+         <div style="display: flex;">
+            <input type="text" name="symp" id="symp" style="margin:0;" />
+            <button type="submit">Search</button>
+         </div>
+         <p id="notice"></p>
+         <ul id="selected">
+
+         </ul>
+         <ul id="symps">
+
+         </ul>
+         <button type="submit"></button>
+      </form>
+      <script>
+         // let l1 = ['back_pain', 'constipation', 'abdominal_pain', 'diarrhoea', 'mild_fever', 'yellow_urine',
+         //    'yellowing_of_eyes', 'acute_liver_failure', 'fluid_overload', 'swelling_of_stomach',
+         //    'swelled_lymph_nodes', 'malaise', 'blurred_and_distorted_vision', 'phlegm', 'throat_irritation',
+         //    'redness_of_eyes', 'sinus_pressure', 'runny_nose', 'congestion', 'chest_pain', 'weakness_in_limbs',
+         //    'fast_heart_rate', 'pain_during_bowel_movements', 'pain_in_anal_region', 'bloody_stool',
+         //    'irritation_in_anus', 'neck_pain', 'dizziness', 'cramps', 'bruising', 'obesity', 'swollen_legs',
+         //    'swollen_blood_vessels', 'puffy_face_and_eyes', 'enlarged_thyroid', 'brittle_nails',
+         //    'swollen_extremeties', 'excessive_hunger', 'extra_marital_contacts', 'drying_and_tingling_lips',
+         //    'slurred_speech', 'knee_pain', 'hip_joint_pain', 'muscle_weakness', 'stiff_neck', 'swelling_joints',
+         //    'movement_stiffness', 'spinning_movements', 'loss_of_balance', 'unsteadiness',
+         //    'weakness_of_one_body_side', 'loss_of_smell', 'bladder_discomfort', 'foul_smell_of urine',
+         //    'continuous_feel_of_urine', 'passage_of_gases', 'internal_itching', 'toxic_look_(typhos)',
+         //    'depression', 'irritability', 'muscle_pain', 'altered_sensorium', 'red_spots_over_body', 'belly_pain',
+         //    'abnormal_menstruation', 'dischromic _patches', 'watering_from_eyes', 'increased_appetite', 'polyuria', 'family_history', 'mucoid_sputum',
+         //    'rusty_sputum', 'lack_of_concentration', 'visual_disturbances', 'receiving_blood_transfusion',
+         //    'receiving_unsterile_injections', 'coma', 'stomach_bleeding', 'distention_of_abdomen',
+         //    'history_of_alcohol_consumption', 'fluid_overload', 'blood_in_sputum', 'prominent_veins_on_calf',
+         //    'palpitations', 'painful_walking', 'pus_filled_pimples', 'blackheads', 'scurring', 'skin_peeling',
+         //    'silver_like_dusting', 'small_dents_in_nails', 'inflammatory_nails', 'blister', 'red_sore_around_nose',
+         //    'yellow_crust_ooze']
+         let diiicct = {
+            'back_pain': ['Back Pain'],
+            'constipation': ['Constipation', 'Stomach'],
+            'abdominal_pain': ['Abdominal Pain', 'Stomach'],
+            'diarrhoea': ['Diarrhoea', 'Stomach'],
+            'mild_fever': ['Mild Fever', 'Fever', 'High Temperature', 'Temperature'],
+            'yellow_urine': ['Yellow Urine', 'Urine', 'Urine Color', 'Urine Color', 'Urine'],
+            'yellowing_of_eyes': ['Yellowing of Eyes', 'Eye', 'Eye Color'],
+            'acute_liver_failure': ['Acute Liver Failure', 'Liver'],
+            'fluid_overload': ['Fluid Overload', 'Liver', 'Liver Function', 'Fluid'],
+            'swelling_of_stomach': ['Swelling of Stomach', 'Stomach', 'Abdomen'],
+            'swelled_lymph_nodes': ['Swelled Lymph Nodes', 'neck', 'armpit', 'chest'],
+            'malaise': ['Discomfort in Whole Body', 'Malaise', 'unease'],
+            'blurred_and_distorted_vision': ['Blurred and Distorted Vision', 'Eye'],
+            'phlegm': ['Phlegm', 'Stomach', 'Mucus'],
+            'throat_irritation': ['Throat Irritation', 'Neck'],
+            'redness_of_eyes': ['Redness of Eyes'],
+            'sinus_pressure': ['Sinus Pressure', 'Nose'],
+            'runny_nose': ['Runny Nose', 'Mucus'],
+            'congestion': ['Congestion', 'Stomach'],
+            'chest_pain': ['Chest Pain', 'breast'],
+            'weakness_in_limbs': ['Weakness in Limbs', 'arm', 'leg'],
+            'fast_heart_rate': ['Fast Heart Rate', 'Chest', 'heartbeat'],
+            'pain_during_bowel_movements': ['Pain During Bowel Movements', 'stool', 'urine'],
+            'pain_in_anal_region': ['Pain in Anal Region', 'stool'],
+            'bloody_stool': ['Bloody Stool', 'anal'],
+            'irritation_in_anus': ['Irritation in Anus', 'anal', 'stool'],
+            'neck_pain': ['Neck Pain'],
+            'dizziness': ['Dizziness', 'Head'],
+            'cramps': ['Cramps', 'Stomach'],
+            'bruising': ['Bruising', 'arm', 'wound'],
+            'obesity': ['OverWeight', 'Obesity', 'Weight'],
+            'swollen_legs': ['Swollen Legs', 'bump', 'lump', 'inflammation', 'enlargement', 'protusion'],
+            'swollen_blood_vessels': ['Swollen Blood Vessels', 'artery', 'vein'],
+            'puffy_face_and_eyes': ['Puffy Face and Eyes'],
+            'enlarged_thyroid': ['Enlarged Thyroid', 'neck'],
+            'brittle_nails': ['Brittle Nails', 'finger', 'hand'],
+            'swollen_extremeties': ['Swollen Extremeties', 'arm', 'leg', 'fluid'],
+            'excessive_hunger': ['Excessive Hunger', 'Stomach', 'Abdomen'],
+            'extra_marital_contacts': ['Extra Marital Contacts', 'Sex'],
+            'drying_and_tingling_lips': ['Drying and Tingling Lips', 'Mouth'],
+            'slurred_speech': ['Slurred Speech', 'Mouth'],
+            'knee_pain': ['Knee Pain', 'Leg'],
+            'hip_joint_pain': ['Hip Joint Pain', 'Waist'],
+            'muscle_weakness': ['Muscle Weakness', 'arm', 'leg'],
+            'stiff_neck': ['Stiff Neck', 'head'],
+            'swelling_joints': ['Swelling Joints', 'arm', 'leg'],
+            'movement_stiffness': ['Movement Stiffness', 'arm', 'leg'],
+            'spinning_movements': ['Spinning Movements', 'head'],
+            'loss_of_balance': ['Loss of Balance', 'head', 'fall'],
+            'unsteadiness': ['Unsteadiness', 'feet', 'leg'],
+            'weakness_of_one_body_side': ['Weakness of One Body Side', 'paralysis'],
+            'loss_of_smell': ['Loss of Smell', 'nose', 'face', 'disappearance'],
+            'bladder_discomfort': ['Bladder Discomfort', 'waist', 'stool', 'urine'],
+            'foul_smell_of_urine': ['Foul Smell of Urine', 'urine'],
+            'continuous_feel_of_urine': ['Frequent Urination', 'Continuous Feel of Urine'],
+            'passage_of_gases': ['Passage of Gases', 'Stool'],
+            'internal_itching': ['Internal Itching', 'stomach'],
+            'toxic_look_(typhos)': ['Toxic Look (Typhos)', 'Fever', 'head'],
+            'depression': ['Depression', 'Anxiety'],
+            'irritability': ['Irritability', 'Anxiety'],
+            'muscle_pain': ['Muscle Pain', 'Leg', 'arm'],
+            'altered_sensorium': ['Altered Sensorium', 'head', 'taste', 'smell', 'touch', 'vision'],
+            'red_spots_over_body': ['Red Spots Over Body', 'skin'],
+            'belly_pain': ['Belly Pain', 'Stomach', 'Abdomen'],
+            'abnormal_menstruation': ['Abnormal Menstruation', 'abdomen', 'stomach'],
+            'dischromic_patches': ['Dischromic Patches', 'skin', 'face', 'spots'],
+            'watering_from_eyes': ['Watering From Eyes', 'fluid'],
+            'increased_appetite': ['Increased Appetite', 'Stomach', 'Abdomen'],
+            'polyuria': ['Polyuria', 'pee', 'urine'],
+            'family_history': ['Family History'],
+            'mucoid_sputum': ['Mucoid Sputum', 'mucus'],
+            'rusty_sputum': ['Rusty Sputum', 'mucus'],
+            'lack_of_concentration': ['Lack of Concentration', 'head'],
+            'visual_disturbances': ['Visual Disturbances', 'vision', 'eye'],
+            'receiving_blood_transfusion': ['Receiving Blood Transfusion', 'heart'],
+            'receiving_unsterile_injections': ['Receiving Unsterile Injections', 'blood', 'needle'],
+            'coma': ['Coma', 'head'],
+            'stomach_bleeding': ['Stomach Bleeding', 'blood', 'injury'],
+            'distention_of_abdomen': ['Distention of Abdomen', 'abdomen', 'stomach'],
+            'history_of_alcohol_consumption': ['History of Alcohol Consumption', 'drinking'],
+            'fluid_overload': ['Fluid Overload', 'Liver Function'],
+            'blood_in_sputum': ['Blood in Sputum', 'mucus'],
+            'prominent_veins_on_calf': ['Prominent Veins on Calf', 'leg', 'knee', 'waist'],
+            'palpitations': ['Palpitations', 'shivering', 'head'],
+            'painful_walking': ['Painful Walking', 'Leg'],
+            'pus_filled_pimples': ['Pus Filled Pimples', 'skin', 'face', 'spots'],
+            'blackheads': ['Blackheads', 'skin', 'face', 'spots'],
+            'scurring': ['Pimples', 'Scurring', 'skin', 'face', 'spots', 'eyes'],
+            'skin_peeling': ['Skin Peeling', 'face', 'spots'],
+            'silver_like_dusting': ['Silver Like Dusting', 'skin', 'chemical', 'color'],
+            'small_dents_in_nails': ['Small Dents in Nails', 'spot', 'finger', 'hand'],
+            'inflammatory_nails': ['Inflammatory Nails', 'finger', 'hand'],
+            'blister': ['Blister', 'water'],
+            'red_sore_around_nose': ['Red Sore Around Nose', 'color', 'pain'],
+            'yellow_crust_ooze': ['Yellow Crust Ooze', 'mucus']
+         }
+         // split the items in array splitted by _
+         // let l2 = l1.map(function (item) {
+         //    return item.split('_').join(' ');
+         // });
+         // check notice id
+         let notice = document.getElementById('notice');
+         // check symp id
+         var symp = document.getElementById('symp');
+         let selectedItems = new Set();
+         // onChange symp
+         symp.addEventListener('keyup', function (e) {
+            var value = this.value;
+            // find similar items in l2
+            findSimilar(value);
+         });
+         // event on change variable length
+         const findSimilar = (value) => {
+            let similar = []
+            for (const prop in diiicct) {
+               // find similar in prop
+               var sim = diiicct[prop].filter(function (item) {
+                  // check if word in item is similar to value
+                  return item.toLowerCase().indexOf(value.toLowerCase()) > -1;
+               });
+               if (sim.length != 0)
+                  similar.push(prop)
+            }
+            // add items to ul
+            var ul = document.getElementById('symps');
+            if (this.value == '') {
+               var li = document.createElement('li');
+               li.innerHTML = "Enter anything first";
+               ul.appendChild(li);
+            }
+            else if (similar.length == 0) {
+               ul.innerHTML = '';
+               var li = document.createElement('li');
+               li.innerHTML = "No such thing found";
+               li.classList = ['no-match'];
+               ul.appendChild(li);
+            }
+            else {
+               ul.innerHTML = '';
+               similar.forEach(function (item) {
+                  var li = document.createElement('li');
+                  li.innerHTML = diiicct[item][0];
+                  // add attr
+                  li.setAttribute('data-value', item);
+                  li.onclick = function () {
+                     // add to similarItems
+                     notice.innerHTML = ''
+                     let isSelected = selectedItems.has(this.getAttribute('data-value'));
+                     if (isSelected === false) {
+                        // add to selected
+                        selectedItems.add(this.getAttribute('data-value'));
+                        var selected = document.getElementById('selected');
+                        var li = document.createElement('li');
+                        li.innerHTML = this.innerHTML;
+                        li.setAttribute('data-value', this.getAttribute('data-value'));
+                        li.onclick = function () {
+                           // remove from selected
+                           selectedItems.delete(this.getAttribute('data-value'));
+                           this.remove();
+                        }
+                        this.classList.add('selected');
+                        selected.appendChild(li);
+                     }
+
+                  }
+                  ul.appendChild(li);
+               });
+            }
+         }
+         //form on submit
+         var form = document.getElementById('form');
+         form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            // check if selectedItems is empty
+            if (selectedItems.size == 0) {
+               // set notice
+               notice.innerHTML = "Please select atleast one symptom";
+               // set notice class
+               notice.classList = ['notice', 'alert', 'alert-danger'];
+            }
+            else {
+               notice.innerHTML = "";
+               notice.classList = ['notice', 'alert', 'alert-success'];
+               // get selected items
+               let selected = Array.from(selectedItems);
+               //send request to server
+               var xhr = new XMLHttpRequest();
+               xhr.open('POST', 'http://localhost:7000/api/predict2', true);
+               xhr.setRequestHeader('Content-Type', 'application/json');
+               //xhr content as selectedItems
+               xhr.send("{\"symptoms\":" + JSON.stringify(selected) + "}");
+               xhr.onload = function () {
+                  if (this.status == 200) {
+                     var res = JSON.parse(this.responseText);
+                     console.log(res);
+                     // set notice
+                     notice.innerHTML = "You have been diagnosed with " + res["Prediction"];
+                     // set notice class
+                     notice.classList = ['notice', 'alert', 'alert-success'];
+                  }
+                  else {
+                     // set notice
+                     notice.innerHTML = "Something went wrong";
+                     // set notice class
+                     notice.classList = ['notice', 'alert', 'alert-danger'];
+                  }
+               }
+
+               console.log(selected);
+               // selectedItems.clear();
+               //clear selected ul
+               selected = document.getElementById('selected');
+               // selected.innerHTML = '';
+            }
+         });
+         window.onload = function () {
+            findSimilar(document.getElementById('symp').value);
+         }
+      </script>
+   </body>
+
+</html>
